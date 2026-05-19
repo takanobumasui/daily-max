@@ -132,6 +132,62 @@
     letter-spacing: 0.03em;
   }
 
+  /* ── audio player ── */
+  .audio-player {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0.9rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    max-width: 360px;
+  }
+
+  .play-btn {
+    background: none;
+    border: 1px solid var(--fg);
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, color 0.1s;
+    color: var(--fg);
+  }
+  .play-btn:hover { background: var(--fg); color: var(--card-bg); }
+  .play-btn svg { width: 12px; height: 12px; }
+
+  .audio-progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .audio-bar-bg {
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .audio-bar-fill {
+    height: 100%;
+    background: var(--fg);
+    width: 0%;
+    pointer-events: none;
+  }
+
+  .audio-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+
   .dl-btn {
     display: inline-flex;
     align-items: center;
@@ -226,6 +282,21 @@ async function load() {
   const imgHtml = p.screenshot
     ? `<img src="patches/${p.date}/${p.screenshot}" alt="${p.title}">`
     : `<div class="patch-image-empty">no screenshot</div>`;
+  const audioHtml = p.audio
+    ? `<div class="audio-player">
+         <button class="play-btn" id="play-btn" aria-label="play">
+           <svg id="play-icon" viewBox="0 0 12 12" fill="currentColor">
+             <polygon points="2,1 11,6 2,11"/>
+           </svg>
+         </button>
+         <div class="audio-progress-wrap">
+           <div class="audio-bar-bg" id="audio-bar-bg">
+             <div class="audio-bar-fill" id="audio-bar-fill"></div>
+           </div>
+           <div class="audio-time" id="audio-time">0:00</div>
+         </div>
+       </div>`
+    : '';
   const dlBtn = p.file
     ? `<a class="dl-btn" href="patches/${p.date}/${p.file}" download>
          <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -241,11 +312,49 @@ async function load() {
     <div class="patch-meta">${p.date}</div>
     <div class="patch-title">${p.title}</div>
     <div class="patch-image">${imgHtml}</div>
+    ${audioHtml}
     ${p.desc ? `<div class="patch-desc">${p.desc}</div>` : ''}
     ${p.comment ? `<div class="patch-comment">${p.comment}</div>` : ''}
     ${tags ? `<div class="patch-tags">${tags}</div>` : ''}
     ${dlBtn}
   `;
+
+  if (p.audio) {
+    const audio = new Audio(`patches/${p.date}/${p.audio}`);
+    const playBtn = document.getElementById('play-btn');
+    const playIcon = document.getElementById('play-icon');
+    const barFill = document.getElementById('audio-bar-fill');
+    const barBg = document.getElementById('audio-bar-bg');
+    const timeEl = document.getElementById('audio-time');
+
+    const iconPlay = `<polygon points="2,1 11,6 2,11"/>`;
+    const iconStop = `<rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/>`;
+
+    const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) { audio.play(); playIcon.innerHTML = iconStop; }
+      else              { audio.pause(); playIcon.innerHTML = iconPlay; }
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (!audio.duration) return;
+      barFill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+      timeEl.textContent = fmt(audio.currentTime);
+    });
+
+    audio.addEventListener('ended', () => {
+      playIcon.innerHTML = iconPlay;
+      barFill.style.width = '0%';
+      timeEl.textContent = '0:00';
+    });
+
+    barBg.addEventListener('click', e => {
+      if (!audio.duration) return;
+      const rect = barBg.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+    });
+  }
 }
 
 load();

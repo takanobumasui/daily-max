@@ -26,6 +26,7 @@ fi
 
 MAXPAT=$(find "$INBOX_DIR" -maxdepth 1 -name "*.maxpat" | head -1)
 SCREENSHOT=$(find "$INBOX_DIR" -maxdepth 1 \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) | head -1)
+AUDIO=$(find "$INBOX_DIR" -maxdepth 1 \( -name "*.mp3" -o -name "*.wav" -o -name "*.m4a" \) | head -1)
 
 if [ -z "$MAXPAT" ]; then
   echo "no .maxpat file found in $INBOX_DIR"
@@ -34,11 +35,8 @@ fi
 
 echo "found:"
 echo "  patch:      $(basename "$MAXPAT")"
-if [ -n "$SCREENSHOT" ]; then
-  echo "  screenshot: $(basename "$SCREENSHOT")"
-else
-  echo "  screenshot: (none)"
-fi
+[ -n "$SCREENSHOT" ] && echo "  screenshot: $(basename "$SCREENSHOT")" || echo "  screenshot: (none)"
+[ -n "$AUDIO" ]      && echo "  audio:      $(basename "$AUDIO")"      || echo "  audio:      (none)"
 echo ""
 
 # ── 2. ask for metadata ─────────────────────────────────────────────
@@ -64,11 +62,16 @@ if [ -n "$SCREENSHOT" ]; then
   cp "$SCREENSHOT" "$DEST/$SCREENSHOT_FILENAME"
 fi
 
+AUDIO_FILENAME=""
+if [ -n "$AUDIO" ]; then
+  AUDIO_FILENAME=$(basename "$AUDIO")
+  cp "$AUDIO" "$DEST/$AUDIO_FILENAME"
+fi
+
 echo ""
 echo "copied to patches/$TODAY/"
 
 # ── 4. update index.json ────────────────────────────────────────────
-# parse tags into JSON array
 TAGS_JSON=$(echo "$TAGS_RAW" | python -c "
 import sys, json
 raw = sys.stdin.read().strip()
@@ -85,7 +88,8 @@ entry = {
   'comment': $(python -c "import json,sys; print(json.dumps('$COMMENT'))"),
   'tags':  $TAGS_JSON,
   'file':  $(python -c "import json; print(json.dumps('$PATCH_FILENAME'))"),
-  'screenshot': $(python -c "import json; print(json.dumps('$SCREENSHOT_FILENAME'))")
+  'screenshot': $(python -c "import json; print(json.dumps('$SCREENSHOT_FILENAME'))"),
+  'audio': $(python -c "import json; print(json.dumps('$AUDIO_FILENAME'))")
 }
 print(json.dumps(entry, ensure_ascii=False))
 ")
@@ -95,7 +99,6 @@ import json
 with open('$INDEX_WIN') as f:
     data = json.load(f)
 new_entry = $NEW_ENTRY
-# remove existing entry for today if re-running
 data = [e for e in data if e.get('date') != '$TODAY']
 data.append(new_entry)
 with open('$INDEX_WIN', 'w') as f:
@@ -118,5 +121,6 @@ read -p "clear inbox? (y/N): " CLEAR
 if [[ "$CLEAR" =~ ^[Yy]$ ]]; then
   [ -n "$MAXPAT" ]      && rm "$MAXPAT"
   [ -n "$SCREENSHOT" ]  && rm "$SCREENSHOT"
+  [ -n "$AUDIO" ]       && rm "$AUDIO"
   echo "inbox cleared"
 fi
