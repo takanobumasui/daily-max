@@ -3,6 +3,7 @@
     "date": "2026-05-19",
     "title": "260519_Play the audio and randomly vary the playback speed",
     "desc": "random, metro, sig, groove",
+    "comment": "",
     "tags": ["random", "groove", "read", "metro"],
     "file": "260519_study-randomPlay.maxpat",
     "screenshot": "スクリーンショット 2026-05-19 181107.png"
