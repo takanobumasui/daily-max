@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>daily max</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --fg: #1a1a18;
+    --muted: #888880;
+    --border: #ddddd8;
+    --accent: #1a1a18;
+    --card-bg: #ffffff;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 3rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .site-title {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .site-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .count-badge {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  main {
+    padding: 2rem 2.5rem 4rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .card {
+    background: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    transition: background 0.1s;
+  }
+
+  .card:hover { background: #fafaf7; }
+
+  .thumb {
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--bg);
+    position: relative;
+  }
+
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  .card-body {
+    padding: 1rem 1.25rem 0.75rem;
+    flex: 1;
+  }
+
+  .card-index {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 0.4rem;
+  }
+
+  .card-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 0.6rem;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .card-footer {
+    padding: 0.5rem 1.25rem 0.9rem;
+  }
+
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--fg);
+    text-decoration: none;
+    border: 1px solid var(--fg);
+    padding: 5px 10px;
+    letter-spacing: 0.03em;
+    transition: background 0.1s, color 0.1s;
+  }
+
+  .dl-btn:hover {
+    background: var(--fg);
+    color: var(--card-bg);
+  }
+
+  .dl-btn svg {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+  }
+
+  .empty-state {
+    grid-column: 1/-1;
+    padding: 4rem;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    background: var(--card-bg);
+  }
+
+  footer {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="site-title">daily max</span>
+  <span class="site-meta">Max/MSP patches, one per day</span>
+  <span class="count-badge" id="count"></span>
+</header>
+
+<main>
+  <div class="grid" id="grid">
+    <div class="empty-state">loading patches...</div>
+  </div>
+</main>
+
+<footer>
+  patches are free to download and use.
+</footer>
+
+<script>
+async function load() {
+  const grid = document.getElementById('grid');
+  const countEl = document.getElementById('count');
+
+  let patches = [];
+  try {
+    const res = await fetch('patches/index.json');
+    patches = await res.json();
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-state">no patches yet. come back tomorrow.</div>';
+    return;
+  }
+
+  if (!patches.length) {
+    grid.innerHTML = '<div class="empty-state">no patches yet. come back tomorrow.</div>';
+    return;
+  }
+
+  // newest first
+  patches.sort((a, b) => b.date.localeCompare(a.date));
+  countEl.textContent = `${patches.length} patch${patches.length !== 1 ? 'es' : ''}`;
+
+  grid.innerHTML = patches.map((p, i) => {
+    const num = String(patches.length - i).padStart(3, '0');
+    const imgTag = p.screenshot
+      ? `<img src="patches/${p.date}/${p.screenshot}" alt="${p.title}" loading="lazy">`
+      : `<div class="thumb-empty">no screenshot</div>`;
+
+    const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+
+    const dlBtn = p.file
+      ? `<a class="dl-btn" href="patches/${p.date}/${p.file}" download>
+           <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2">
+             <line x1="5" y1="1" x2="5" y2="7"/><polyline points="2,5 5,8 8,5"/>
+             <line x1="1" y1="9" x2="9" y2="9"/>
+           </svg>
+           download .maxpat
+         </a>`
+      : '';
+
+    return `
+      <div class="card">
+        <div class="thumb">${imgTag}</div>
+        <div class="card-body">
+          <div class="card-index">${p.date} &nbsp;#${num}</div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-desc">${p.desc || ''}</div>
+          ${tags ? `<div class="card-tags">${tags}</div>` : ''}
+        </div>
+        ${dlBtn ? `<div class="card-footer">${dlBtn}</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+load();
+</script>
+</body>
+</html>
