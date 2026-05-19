@@ -66,27 +66,27 @@ echo "copied to patches/$TODAY/"
 
 # ── 4. update index.json ────────────────────────────────────────────
 # parse tags into JSON array
-TAGS_JSON=$(echo "$TAGS_RAW" | python3 -c "
+TAGS_JSON=$(echo "$TAGS_RAW" | python -c "
 import sys, json
 raw = sys.stdin.read().strip()
 tags = [t.strip() for t in raw.split(',') if t.strip()] if raw else []
 print(json.dumps(tags))
 ")
 
-NEW_ENTRY=$(python3 -c "
+NEW_ENTRY=$(python -c "
 import json
 entry = {
   'date': '$TODAY',
-  'title': $(python3 -c "import json,sys; print(json.dumps('$TITLE'))"),
-  'desc':  $(python3 -c "import json,sys; print(json.dumps('$DESC'))"),
+  'title': $(python -c "import json,sys; print(json.dumps('$TITLE'))"),
+  'desc':  $(python -c "import json,sys; print(json.dumps('$DESC'))"),
   'tags':  $TAGS_JSON,
-  'file':  $(python3 -c "import json; print(json.dumps('$PATCH_FILENAME'))"),
-  'screenshot': $(python3 -c "import json; print(json.dumps('$SCREENSHOT_FILENAME'))")
+  'file':  $(python -c "import json; print(json.dumps('$PATCH_FILENAME'))"),
+  'screenshot': $(python -c "import json; print(json.dumps('$SCREENSHOT_FILENAME'))")
 }
 print(json.dumps(entry, ensure_ascii=False))
 ")
 
-python3 -c "
+python -c "
 import json
 with open('$INDEX') as f:
     data = json.load(f)
