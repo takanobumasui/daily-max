@@ -5,10 +5,12 @@
 set -e
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_DIR_WIN="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -W)"
 INBOX_DIR="${DAILY_MAX_INBOX:-/c/Users/takan/Dropbox/00_artWorks/80_maxMSP/01_daily-max}"
 TODAY=$(date +%Y-%m-%d)
 DEST="$REPO_DIR/patches/$TODAY"
 INDEX="$REPO_DIR/patches/index.json"
+INDEX_WIN="$REPO_DIR_WIN/patches/index.json"
 
 echo ""
 echo "daily max — patch registration"
@@ -88,13 +90,13 @@ print(json.dumps(entry, ensure_ascii=False))
 
 python -c "
 import json
-with open('$INDEX') as f:
+with open('$INDEX_WIN') as f:
     data = json.load(f)
 new_entry = $NEW_ENTRY
 # remove existing entry for today if re-running
 data = [e for e in data if e.get('date') != '$TODAY']
 data.append(new_entry)
-with open('$INDEX', 'w') as f:
+with open('$INDEX_WIN', 'w') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 print('index.json updated ($TODAY added, total:', len(data), 'patches)')
 "
