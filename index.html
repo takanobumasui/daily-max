@@ -14,7 +14,6 @@
     --fg: #1a1a18;
     --muted: #888880;
     --border: #ddddd8;
-    --accent: #1a1a18;
     --card-bg: #ffffff;
   }
 
@@ -74,10 +73,10 @@
     background: var(--card-bg);
     display: flex;
     flex-direction: column;
-    cursor: default;
+    text-decoration: none;
+    color: inherit;
     transition: background 0.1s;
   }
-
   .card:hover { background: #fafaf7; }
 
   .thumb {
@@ -85,7 +84,6 @@
     aspect-ratio: 4/3;
     overflow: hidden;
     background: var(--bg);
-    position: relative;
   }
 
   .thumb img {
@@ -108,7 +106,7 @@
   }
 
   .card-body {
-    padding: 1rem 1.25rem 0.75rem;
+    padding: 1rem 1.25rem 1.25rem;
     flex: 1;
   }
 
@@ -148,35 +146,6 @@
     letter-spacing: 0.03em;
   }
 
-  .card-footer {
-    padding: 0.5rem 1.25rem 0.9rem;
-  }
-
-  .dl-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--fg);
-    text-decoration: none;
-    border: 1px solid var(--fg);
-    padding: 5px 10px;
-    letter-spacing: 0.03em;
-    transition: background 0.1s, color 0.1s;
-  }
-
-  .dl-btn:hover {
-    background: var(--fg);
-    color: var(--card-bg);
-  }
-
-  .dl-btn svg {
-    width: 10px;
-    height: 10px;
-    flex-shrink: 0;
-  }
-
   .empty-state {
     grid-column: 1/-1;
     padding: 4rem;
@@ -196,122 +165,13 @@
     color: var(--muted);
     font-style: italic;
   }
-
-  /* ── modal ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(26,26,24,0.6);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--card-bg);
-    max-width: 760px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .modal-header {
-    padding: 1.25rem 1.5rem 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .modal-close {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--muted);
-    padding: 0;
-    flex-shrink: 0;
-  }
-  .modal-close:hover { color: var(--fg); }
-
-  .modal-img {
-    width: 100%;
-    padding: 1rem 1.5rem 0;
-  }
-  .modal-img img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .modal-img-empty {
-    width: 100%;
-    aspect-ratio: 4/3;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--border);
-  }
-
-  .modal-body {
-    padding: 1rem 1.5rem 1.5rem;
-    flex: 1;
-  }
-
-  .modal-meta {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-  }
-
-  .modal-title {
-    font-size: 1rem;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-  }
-
-  .modal-desc {
-    font-size: 0.8rem;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 0.75rem;
-  }
-
-  .modal-comment {
-    font-size: 0.8rem;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
-    margin-top: 0.25rem;
-    color: var(--fg);
-  }
-
-  .modal-footer {
-    padding: 0.75rem 1.5rem 1.25rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
 </style>
 </head>
 <body>
 
 <header>
   <span class="site-title">daily max</span>
-  <span class="site-meta">Max/MSP patches, one per day</span>
+  <span class="site-meta">Max/MSP patches, one per day &nbsp;//In the case of Takanobu Masui</span>
   <span class="count-badge" id="count"></span>
 </header>
 
@@ -325,67 +185,37 @@
   patches are free to download and use.
 </footer>
 
-<!-- modal -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-meta" id="modal-meta"></div>
-        <div class="modal-title" id="modal-title"></div>
-      </div>
-      <button class="modal-close" id="modal-close">[ close ]</button>
-    </div>
-    <div class="modal-img" id="modal-img"></div>
-    <div class="modal-body">
-      <div class="modal-desc" id="modal-desc"></div>
-      <div class="card-tags" id="modal-tags"></div>
-      <div class="modal-comment" id="modal-comment"></div>
-    </div>
-    <div class="modal-footer">
-      <div class="card-tags" id="modal-tags-footer"></div>
-      <a class="dl-btn" id="modal-dl" href="#" download>
-        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2">
-          <line x1="5" y1="1" x2="5" y2="7"/><polyline points="2,5 5,8 8,5"/>
-          <line x1="1" y1="9" x2="9" y2="9"/>
-        </svg>
-        download .maxpat
-      </a>
-    </div>
-  </div>
-</div>
-
 <script>
-let allPatches = [];
-
 async function load() {
   const grid = document.getElementById('grid');
   const countEl = document.getElementById('count');
 
+  let patches = [];
   try {
     const res = await fetch('patches/index.json');
-    allPatches = await res.json();
+    patches = await res.json();
   } catch(e) {
     grid.innerHTML = '<div class="empty-state">no patches yet. come back tomorrow.</div>';
     return;
   }
 
-  if (!allPatches.length) {
+  if (!patches.length) {
     grid.innerHTML = '<div class="empty-state">no patches yet. come back tomorrow.</div>';
     return;
   }
 
-  allPatches.sort((a, b) => b.date.localeCompare(a.date));
-  countEl.textContent = `${allPatches.length} patch${allPatches.length !== 1 ? 'es' : ''}`;
+  patches.sort((a, b) => b.date.localeCompare(a.date));
+  countEl.textContent = `${patches.length} patch${patches.length !== 1 ? 'es' : ''}`;
 
-  grid.innerHTML = allPatches.map((p, i) => {
-    const num = String(allPatches.length - i).padStart(3, '0');
+  grid.innerHTML = patches.map((p, i) => {
+    const num = String(patches.length - i).padStart(3, '0');
     const imgTag = p.screenshot
       ? `<img src="patches/${p.date}/${p.screenshot}" alt="${p.title}" loading="lazy">`
       : `<div class="thumb-empty">no screenshot</div>`;
     const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
 
     return `
-      <div class="card" data-index="${i}" style="cursor:pointer;">
+      <a class="card" href="patch.html?date=${p.date}">
         <div class="thumb">${imgTag}</div>
         <div class="card-body">
           <div class="card-index">${p.date} &nbsp;#${num}</div>
@@ -393,58 +223,9 @@ async function load() {
           <div class="card-desc">${p.desc || ''}</div>
           ${tags ? `<div class="card-tags">${tags}</div>` : ''}
         </div>
-      </div>`;
+      </a>`;
   }).join('');
-
-  grid.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', () => openModal(parseInt(card.dataset.index)));
-  });
 }
-
-function openModal(i) {
-  const p = allPatches[i];
-  const num = String(allPatches.length - i).padStart(3, '0');
-
-  document.getElementById('modal-meta').textContent = `${p.date}  #${num}`;
-  document.getElementById('modal-title').textContent = p.title;
-  document.getElementById('modal-desc').textContent = p.desc || '';
-
-  const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
-  document.getElementById('modal-tags').innerHTML = tags;
-
-  const imgEl = document.getElementById('modal-img');
-  imgEl.innerHTML = p.screenshot
-    ? `<img src="patches/${p.date}/${p.screenshot}" alt="${p.title}">`
-    : `<div class="modal-img-empty">no screenshot</div>`;
-
-  const commentEl = document.getElementById('modal-comment');
-  commentEl.style.display = p.comment ? 'block' : 'none';
-  commentEl.textContent = p.comment || '';
-
-  const dlEl = document.getElementById('modal-dl');
-  if (p.file) {
-    dlEl.href = `patches/${p.date}/${p.file}`;
-    dlEl.style.display = 'inline-flex';
-  } else {
-    dlEl.style.display = 'none';
-  }
-
-  document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('modal-close').addEventListener('click', closeModal);
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
 
 load();
 </script>

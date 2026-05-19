@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>daily max</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --fg: #1a1a18;
+    --muted: #888880;
+    --border: #ddddd8;
+    --accent: #1a1a18;
+    --card-bg: #ffffff;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 3rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .site-title {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    color: var(--fg);
+  }
+  .site-title:hover { opacity: 0.6; }
+
+  .site-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem 5rem;
+  }
+
+  .patch-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .patch-title {
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+
+  .patch-image {
+    width: 100%;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+  }
+
+  .patch-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .patch-image-empty {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--border);
+  }
+
+  .patch-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .patch-comment {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--card-bg);
+    border-left: 2px solid var(--border);
+  }
+
+  .patch-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 2rem;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--fg);
+    text-decoration: none;
+    border: 1px solid var(--fg);
+    padding: 7px 14px;
+    letter-spacing: 0.03em;
+    transition: background 0.1s, color 0.1s;
+  }
+  .dl-btn:hover { background: var(--fg); color: var(--card-bg); }
+  .dl-btn svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+  }
+  .back-link:hover { color: var(--fg); }
+
+  footer {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .error-state {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 4rem 0;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="site-title" href="index.html">daily max</a>
+  <span class="site-meta">Max/MSP patches, one per day &nbsp;//In the case of Takanobu Masui</span>
+</header>
+
+<main id="main">
+  <div class="error-state">loading...</div>
+</main>
+
+<footer>
+  patches are free to download and use.
+</footer>
+
+<script>
+async function load() {
+  const main = document.getElementById('main');
+  const params = new URLSearchParams(location.search);
+  const date = params.get('date');
+
+  if (!date) {
+    main.innerHTML = '<div class="error-state">patch not found.</div>';
+    return;
+  }
+
+  let patches = [];
+  try {
+    const res = await fetch('patches/index.json');
+    patches = await res.json();
+  } catch(e) {
+    main.innerHTML = '<div class="error-state">could not load patches.</div>';
+    return;
+  }
+
+  const p = patches.find(x => x.date === date);
+  if (!p) {
+    main.innerHTML = '<div class="error-state">patch not found.</div>';
+    return;
+  }
+
+  document.title = `${p.title} — daily max`;
+
+  const tags = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+  const imgHtml = p.screenshot
+    ? `<img src="patches/${p.date}/${p.screenshot}" alt="${p.title}">`
+    : `<div class="patch-image-empty">no screenshot</div>`;
+  const dlBtn = p.file
+    ? `<a class="dl-btn" href="patches/${p.date}/${p.file}" download>
+         <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2">
+           <line x1="5" y1="1" x2="5" y2="7"/><polyline points="2,5 5,8 8,5"/>
+           <line x1="1" y1="9" x2="9" y2="9"/>
+         </svg>
+         download .maxpat
+       </a>`
+    : '';
+
+  main.innerHTML = `
+    <a class="back-link" href="index.html">← back</a>
+    <div class="patch-meta">${p.date}</div>
+    <div class="patch-title">${p.title}</div>
+    <div class="patch-image">${imgHtml}</div>
+    ${p.desc ? `<div class="patch-desc">${p.desc}</div>` : ''}
+    ${p.comment ? `<div class="patch-comment">${p.comment}</div>` : ''}
+    ${tags ? `<div class="patch-tags">${tags}</div>` : ''}
+    ${dlBtn}
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
