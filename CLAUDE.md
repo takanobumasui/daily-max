@@ -18,7 +18,7 @@ daily-max/
 
 ## inbox (ファイルの置き場所)
 
-デフォルト: `~/Desktop/max-inbox/`
+デフォルト: `C:\Users\takan\Dropbox\00_artWorks\80_maxMSP\01_daily-max`
 変更したい場合は環境変数で指定: `export DAILY_MAX_INBOX=~/path/to/folder`
 
 毎日ここに `.maxpat` とスクショ（PNG or JPG）を置いておく。

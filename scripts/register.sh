@@ -5,7 +5,7 @@
 set -e
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-INBOX_DIR="${DAILY_MAX_INBOX:-$HOME/Desktop/max-inbox}"
+INBOX_DIR="${DAILY_MAX_INBOX:-/c/Users/takan/Dropbox/00_artWorks/80_maxMSP/01_daily-max}"
 TODAY=$(date +%Y-%m-%d)
 DEST="$REPO_DIR/patches/$TODAY"
 INDEX="$REPO_DIR/patches/index.json"
