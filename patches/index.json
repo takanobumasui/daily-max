@@ -3,7 +3,6 @@
     "date": "2026-05-19",
     "title": "260519_Play the audio and randomly vary the playback speed",
     "desc": "random, metro, sig, groove",
-    "comment": "",
     "tags": ["random", "groove", "read", "metro"],
     "file": "260519_study-randomPlay.maxpat",
     "screenshot": "スクリーンショット 2026-05-19 181107.png",
@@ -12,8 +11,7 @@
   {
     "date": "2026-05-20",
     "title": "260520_Delay",
-    "desc": "delay",
-    "comment": "フィールドレコーディングした音にDelayをかけたもの",
+    "desc": "フィールドレコーディングした音にDelayをかけたもの",
     "tags": ["tapin", "tapout"],
     "file": "260520_Delay.maxpat",
     "screenshot": "スクリーンショット 2026-05-20 17.17.53.png",

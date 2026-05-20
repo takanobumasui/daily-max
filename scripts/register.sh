@@ -46,8 +46,7 @@ if [ -z "$TITLE" ]; then
   exit 1
 fi
 
-read -p "description (1 line): " DESC
-read -p "comment (longer note, optional): " COMMENT
+read -p "description: " DESC
 read -p "tags (comma-separated, e.g. midi,generative): " TAGS_RAW
 
 # ── 3. copy files ───────────────────────────────────────────────────
@@ -85,7 +84,6 @@ entry = {
   'date': '$TODAY',
   'title': $(python -c "import json,sys; print(json.dumps('$TITLE'))"),
   'desc':  $(python -c "import json,sys; print(json.dumps('$DESC'))"),
-  'comment': $(python -c "import json,sys; print(json.dumps('$COMMENT'))"),
   'tags':  $TAGS_JSON,
   'file':  $(python -c "import json; print(json.dumps('$PATCH_FILENAME'))"),
   'screenshot': $(python -c "import json; print(json.dumps('$SCREENSHOT_FILENAME'))"),
