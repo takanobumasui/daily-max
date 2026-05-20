@@ -8,5 +8,15 @@
     "file": "260519_study-randomPlay.maxpat",
     "screenshot": "スクリーンショット 2026-05-19 181107.png",
     "audio": "260519.mp3"
+  },
+  {
+    "date": "2026-05-20",
+    "title": "260520_Delay",
+    "desc": "delay",
+    "comment": "フィールドレコーディングした音にDelayをかけたもの",
+    "tags": ["tapin", "tapout"],
+    "file": "260520_Delay.maxpat",
+    "screenshot": "スクリーンショット 2026-05-20 17.17.53.png",
+    "audio": "delay.mp3"
   }
 ]

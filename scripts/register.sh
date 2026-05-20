@@ -96,12 +96,12 @@ print(json.dumps(entry, ensure_ascii=False))
 
 python -c "
 import json
-with open('$INDEX_WIN') as f:
+with open('$INDEX_WIN', encoding='utf-8') as f:
     data = json.load(f)
 new_entry = $NEW_ENTRY
 data = [e for e in data if e.get('date') != '$TODAY']
 data.append(new_entry)
-with open('$INDEX_WIN', 'w') as f:
+with open('$INDEX_WIN', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 print('index.json updated ($TODAY added, total:', len(data), 'patches)')
 "
