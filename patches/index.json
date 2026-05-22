@@ -3,12 +3,7 @@
     "date": "2026-05-19",
     "title": "260519_Play the audio and randomly vary the playback speed",
     "desc": "random, metro, sig, groove",
-    "tags": [
-      "random",
-      "groove",
-      "read",
-      "metro"
-    ],
+    "tags": ["random", "groove", "read", "metro"],
     "file": "260519_study-randomPlay.maxpat",
     "screenshot": "スクリーンショット 2026-05-19 181107.png",
     "audio": "260519.mp3"
@@ -17,23 +12,18 @@
     "date": "2026-05-20",
     "title": "260520_Delay",
     "desc": "フィールドレコーディングした音にDelayをかけたもの",
-    "tags": [
-      "tapin",
-      "tapout"
-    ],
+    "tags": ["tapin", "tapout"],
     "file": "260520_Delay.maxpat",
     "screenshot": "スクリーンショット 2026-05-20 17.17.53.png",
     "audio": "delay.mp3"
   },
   {
     "date": "2026-05-22",
-    "title": "\u001b[\u001b[C\u001b\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C260522",
+    "title": "260522",
     "desc": "",
-    "tags": [
-      "\u001b[A\u001b[Bfrequency"
-    ],
+    "tags": ["frequency"],
     "file": "260522.maxpat",
-    "screenshot": "XN[Vbg 2026-05-22 185044.png",
+    "screenshot": "スクリーンショット 2026-05-22 185044.png",
     "audio": "260522.mp3"
   }
 ]
